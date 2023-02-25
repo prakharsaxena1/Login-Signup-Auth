@@ -19,10 +19,12 @@ const RegisterPage = (req, res) => {
 
 const accountLogin = async (req, res) => {
     console.log('Login');
+    res.redirect('/protected-route');
 };
 
 const accountRegister = async (req, res) => {
     console.log('Register');
+    res.redirect('/protected-route');
 };
 
 // DEV ONLY
