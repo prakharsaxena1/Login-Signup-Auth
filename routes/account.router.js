@@ -1,12 +1,15 @@
 // Dependencies
 const express = require("express");
+const passport = require("passport");
 const router = express.Router();
 const accountController = require('../controllers/account.controller')
 
 // Routes [ACCOUNT]
 router.route('/login')
     .get(accountController.LoginPage)
-    .post(accountController.accountLogin);
+    .post((req, res) => {
+        res.redirect('/login-success');
+    });
 router.route('/register')
     .get(accountController.RegisterPage)
     .post(accountController.accountRegister);
@@ -20,17 +23,11 @@ router.get('/', (req, res) => {
 });
 
 router.get('/protected-route', (req, res) => {
-    // This is how you check if a user is authenticated and protect a route.  You could turn this into a custom middleware to make it less redundant
-    if (req.isAuthenticated()) {
-        res.send('<h1>You are authenticated</h1><p><a href="/logout">Logout and reload</a></p>');
-    } else {
-        res.send('<h1>You are not authenticated</h1><p><a href="/login">Login</a></p>');
-    }
+    res.send('Check auth then decide visit this page or not');
 });
 
 router.get('/logout', (req, res, next) => {
-    req.logout();
-    res.redirect('/protected-route');
+    res.send('User logout');
 });
 
 router.get('/login-success', (req, res, next) => {
