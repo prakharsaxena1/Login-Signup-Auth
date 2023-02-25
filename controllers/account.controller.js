@@ -17,14 +17,22 @@ const RegisterPage = (req, res) => {
     res.send(form);
 };
 
-const accountLogin = async (req, res) => {
-    console.log('Login');
-    res.redirect('/protected-route');
-};
-
 const accountRegister = async (req, res) => {
-    console.log('Register');
-    res.redirect('/protected-route');
+    let user = await User.findOne({ username: req.body.username });
+    try {
+        if (user !== null) {
+            return new Error('Username already taken')
+        } else {
+            user = new User({
+                username: req.body.username,
+                password: req.body.password
+            });
+            await user.save();
+            res.redirect('/login');
+        }
+    } catch (err) {
+        return res.status(400).send(err.message);
+    }
 };
 
 // DEV ONLY
@@ -38,7 +46,6 @@ const getAllUsers = async (req, res) => {
 };
 
 module.exports = {
-    accountLogin,
     accountRegister,
     getAllUsers,
     LoginPage,
