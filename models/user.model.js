@@ -1,10 +1,5 @@
 const mongoose = require('mongoose');
 
-const validateEmail = function (email) {
-    const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return re.test(email)
-};
-
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -13,12 +8,12 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        select: false,
+        // select: false,
     },
 }, { timestamps: true });
 
-function verifyPassword (password, user) {
-    return user.password === password;
+function verifyPassword(password) {
+    return this.password === password;
 }
 
 userSchema.methods.verifyPassword = verifyPassword;
