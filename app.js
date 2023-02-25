@@ -1,5 +1,5 @@
-const connection = require("./db/connection");
 const express = require("express");
+const connection = require("./db/connection");
 const MongoStore = require("connect-mongo");
 const session = require("express-session");
 const app = express();
