@@ -1,12 +1,13 @@
 // Dependencies
 const express = require("express");
+const passport = require("passport");
 const router = express.Router();
 const accountController = require('../controllers/account.controller')
 
 // Routes [ACCOUNT]
 router.route('/login')
     .get(accountController.LoginPage)
-    .post(accountController.accountLogin);
+    .post(passport.authenticate('local', { failureRedirect: 'login-failure', successRedirect: 'login-success' }));
 router.route('/register')
     .get(accountController.RegisterPage)
     .post(accountController.accountRegister);
@@ -29,8 +30,14 @@ router.get('/protected-route', (req, res) => {
 });
 
 router.get('/logout', (req, res, next) => {
-    req.logout();
-    res.redirect('/protected-route');
+    req.logout((err) => {
+        if (err) { return next(err); }
+        req.session.destroy((err) => {
+            res.clearCookie('connect.sid');
+            res.redirect('/protected-route');
+            // res.send('Logged out');
+        });
+    });
 });
 
 router.get('/login-success', (req, res, next) => {
