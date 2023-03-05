@@ -1,15 +1,12 @@
 // Dependencies
-const express = require("express");
+const router = require("express").Router()
 const passport = require("passport");
-const router = express.Router();
 const accountController = require('../controllers/account.controller')
 
 // Routes [ACCOUNT]
 router.route('/login')
     .get(accountController.LoginPage)
-    .post((req, res) => {
-        res.redirect('/login-success');
-    });
+    .post(accountController.accountLogin);
 router.route('/register')
     .get(accountController.RegisterPage)
     .post(accountController.accountRegister);
@@ -22,12 +19,13 @@ router.get('/', (req, res) => {
     res.send('<h1>Home</h1><p>Please <a href="/register">register</a></p>');
 });
 
-router.get('/protected-route', (req, res) => {
+router.get('/protected-route', passport.authenticate('jwt', { session: false }), (req, res) => {
     res.send('Check auth then decide visit this page or not');
 });
 
 router.get('/logout', (req, res, next) => {
-    res.send('User logout');
+    res.clearCookie('authorization');
+    res.redirect('/');
 });
 
 router.get('/login-success', (req, res, next) => {

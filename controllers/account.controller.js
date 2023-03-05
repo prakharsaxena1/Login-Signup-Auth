@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const auth = require('./../auth/auth');
 
 // ACCOUNT MANAGEMENT
 const LoginPage = (req, res) => {
@@ -11,9 +12,9 @@ const LoginPage = (req, res) => {
 
 const RegisterPage = (req, res) => {
     const form = '<h1>Register Page</h1><form method="post" action="register">\
-                    Enter Username:<br><input type="text" name="username">\
-                    <br>Enter Password:<br><input type="password" name="password">\
-                    <br><br><input type="submit" value="Submit"></form>';
+    Enter Username:<br><input type="text" name="username">\
+    <br>Enter Password:<br><input type="password" name="password">\
+    <br><br><input type="submit" value="Submit"></form>';
     res.send(form);
 };
 
@@ -23,12 +24,27 @@ const accountRegister = async (req, res) => {
         if (user !== null) {
             return new Error('Username already taken')
         } else {
-            user = new User({
-                username: req.body.username,
-                password: req.body.password
-            });
+            user = new User({ username: req.body.username, password: req.body.password });
             await user.save();
-            res.redirect('/login');
+            res = auth.setAuthCookie(res, user);
+            return res.redirect('/login-success');
+        }
+    } catch (err) {
+        return res.status(400).send(err.message);
+    }
+};
+
+const accountLogin = async (req, res) => {
+    let user = await User.findOne({ username: req.body.username });
+    try {
+        if (user === null) {
+            return new Error('Wrong credentials provides')
+        } else {
+            if (user.password === req.body.password) {
+                res = auth.setAuthCookie(res, user)
+                return res.redirect('/login-success');
+            }
+            return res.redirect('/login-failure');
         }
     } catch (err) {
         return res.status(400).send(err.message);
@@ -47,6 +63,7 @@ const getAllUsers = async (req, res) => {
 
 module.exports = {
     accountRegister,
+    accountLogin,
     getAllUsers,
     LoginPage,
     RegisterPage,
