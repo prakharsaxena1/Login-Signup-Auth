@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const { setAuthCookie } = require('./../auth/auth');
 
 // ACCOUNT MANAGEMENT
 const LoginPage = (req, res) => {
@@ -23,15 +24,29 @@ const accountRegister = async (req, res) => {
         if (user !== null) {
             return new Error('Username already taken')
         } else {
-            user = new User({
-                username: req.body.username,
-                password: req.body.password
-            });
+            user = new User({ username: req.body.username, password: req.body.password });
             await user.save();
-            res.redirect('/login');
+            res = setAuthCookie(res, user);
+            return res.redirect('/login-success');
         }
     } catch (err) {
         return res.status(400).send(err.message);
+    }
+};
+
+const accountLogin = async (req, res) => {
+    let user = await User.findOne({ username: req.body.username });
+    console.log({ user, reqUser: req.body });
+    try {
+        if (user !== null) {
+            if (user.password === req.body.password) {
+                res = setAuthCookie(res, user)
+                return res.redirect('/login-success');
+            }
+        }
+        return res.redirect('/login-failure');
+    } catch (err) {
+        return res.status(400).json({ code: 400, message: err.message });
     }
 };
 
@@ -46,6 +61,7 @@ const getAllUsers = async (req, res) => {
 };
 
 module.exports = {
+    accountLogin,
     accountRegister,
     getAllUsers,
     LoginPage,
