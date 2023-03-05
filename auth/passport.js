@@ -2,7 +2,9 @@ const path = require('path');
 const fs = require('fs');
 const JwtStrategy = require('passport-jwt').Strategy;
 const User = require('../models/user.model');
+const { createKeysIfNotExist } = require('./auth');
 
+createKeysIfNotExist();
 const PUB_KEY = fs.readFileSync(path.join('bin', 'id_rsa_pub.pem'), 'utf8');
 
 const cookieExtractor = function (req) {

@@ -32,4 +32,5 @@ const setAuthCookie = (res, user) => {
 
 module.exports = {
     setAuthCookie,
+    createKeysIfNotExist,
 }
