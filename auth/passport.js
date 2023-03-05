@@ -7,15 +7,10 @@ const { createKeysIfNotExist } = require('./auth');
 createKeysIfNotExist();
 const PUB_KEY = fs.readFileSync(path.join('bin', 'id_rsa_pub.pem'), 'utf8');
 
-const cookieExtractor = function (req) {
+const cookieExtractor = (req) => {
     try {
-        let token = null;
-        if (req && req.cookies) token = req.cookies['authorization'];
-        token = token.split(' ');
-        if (token.length !== 2) {
-            return null;
-        }
-        return token[1];
+        const token = req?.cookies['authorization']?.split(' ')[1];
+        return token || null;
     } catch (err) {
         return null;
     }
