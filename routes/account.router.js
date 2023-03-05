@@ -1,6 +1,5 @@
 // Dependencies
 const express = require("express");
-const passport = require("passport");
 const router = express.Router();
 const accountController = require('../controllers/account.controller')
 
@@ -16,7 +15,6 @@ router.route('/register')
 
 // DEV ONLY
 router.route('/dev').get(accountController.getAllUsers)
-
 
 router.get('/', (req, res) => {
     res.send('<h1>Home</h1><p>Please <a href="/register">register</a></p>');
